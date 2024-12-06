@@ -14,11 +14,13 @@ namespace BLL.DAL
         public int StockQuantity {  get; set; }
 
         [Required]
-        public Decimal Price { get; set; }
+        public string Price { get; set; }
 
         [Required]
         public DateTime? CreatedDate { get; set; }
         public int? CategoryId {  get; set; } // foreign key
         public Category Category { get; set; } //navigational property
+        
+
     }
 }

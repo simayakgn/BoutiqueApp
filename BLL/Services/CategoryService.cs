@@ -2,12 +2,14 @@
 using BLL.Models;
 using BLL.Services.Bases;
 using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore;
 
 namespace BLL.Services
 {
     public interface ICategoryService
     {
         public IQueryable<CategoryModel> Query();
+
         public ServiceBase Create(Category record);
         public ServiceBase Update(Category record);
         public ServiceBase Delete(int id);
@@ -27,11 +29,8 @@ namespace BLL.Services
         {
             if (_db.Categories.Any(s => s.Name.ToUpper() == record.Name.ToUpper().Trim()))
                 return Error("Category with the same name exists!");
-            record.Name = record.Name.Trim();
-            if (record.displayOrder == null)
-            {
-                record.displayOrder = 0; // Default to 0 if not set
-            }
+            record.Name = record.Name?.Trim();
+            //record.Description = record.Description.Trim();
             _db.Categories.Add(record);
             _db.SaveChanges(); // Commit to the database
             return Success("Category created successfully.");
@@ -41,10 +40,11 @@ namespace BLL.Services
         {
             if (_db.Categories.Any(s => s.Id != record.Id && s.Name.ToUpper() == record.Name.ToUpper().Trim()))
                 return Error("Category with the same name exists!");
-            var entity = _db.Categories.SingleOrDefault(s => s.Id == record.Id);
+            Category entity = _db.Categories.SingleOrDefault(s => s.Id == record.Id);
             if (entity is null)
                 return Error("Category can't be found!");
             entity.Name = record.Name.Trim();
+            entity.Description = record.Description?.Trim();
             _db.Categories.Update(entity);
             _db.SaveChanges(); // commit to the database
             return Success("Category updated successfully.");

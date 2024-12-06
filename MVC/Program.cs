@@ -1,5 +1,7 @@
 using BLL.DAL;
+using BLL.Models;
 using BLL.Services;
+using BLL.Services.Bases;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,10 +10,14 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 //IoC Container
-string connectionString = "server=(localdb)\\mssqllocaldb;database=BoutiqueAppDB;trusted_connection=true;";
+var connectionString = "server=(localdb)\\mssqllocaldb;database=BoutiqueAppDB;trusted_connection=true;";
 builder.Services.AddDbContext<Db>(options => options.UseSqlServer(connectionString));
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+//builder.Services.AddScoped<ICategoryService<Category, CategoryModel>, CategoryService>();
+//builder.Services.AddDbContext<Db>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Db")));
+builder.Configuration.GetSection(nameof(AppSettings)).Bind(new AppSettings());
 
+builder.Services.AddScoped<ICategoryService,CategoryService>();
+builder.Services.AddScoped<IService<Products, ProductModel>, ProductService>();
 
 var app = builder.Build();
 
