@@ -19,7 +19,7 @@ namespace BLL.Services
         }
         public IQueryable<ProductModel> Query()
         {
-           return _db.Products.Include(p => p.Category).OrderByDescending(p=>p.CreatedDate).ThenBy(p=>p.Name).
+           return _db.Products.Include(p => p.Category).Include(w=>w.Wishlists).ThenInclude(wl=> wl.Customer).OrderByDescending(p=>p.CreatedDate).ThenBy(p=>p.Name).
                 Select(p=> new ProductModel {Record = p});
 
         }
@@ -39,8 +39,22 @@ namespace BLL.Services
         {
             if (_db.Products.Any(p => p.Id != record.Id && p.Name.ToLower() == record.Name.ToLower().Trim()))
                 return Error("Product with the same name exists!");
-            record.Name = record.Name?.Trim();
-            _db.Products.Update(record);
+            var entity = _db.Products.Include(p => p.Wishlists).SingleOrDefault(p => p.Id == record.Id);
+            if (entity is null)
+                return Error("Product not found!");
+
+            _db.Wishlists.RemoveRange(entity.Wishlists);
+
+            entity.Name = record.Name?.Trim();
+            entity.Description = record.Description?.Trim();
+            entity.Price = record.Price?.Trim();
+            entity.StockQuantity = record.StockQuantity;
+            entity.CategoryId = record.CategoryId;
+            entity.CreatedDate = record.CreatedDate;
+
+            entity.Wishlists = record.Wishlists;
+
+            _db.Products.Update(entity);
             _db.SaveChanges();
             return Success("Product updated successfully.");
         }
@@ -50,6 +64,7 @@ namespace BLL.Services
             var entity = _db.Products.SingleOrDefault(p=>p.Id == id);
             if (entity is null)
                 return Error("Product can't be found!");
+            _db.Wishlists.RemoveRange(entity.Wishlists);
             _db.Products.Remove(entity);
             _db.SaveChanges();
             return Success("Product deleted successfully.");

@@ -8,9 +8,17 @@
 
   <ItemGroup>
     <Compile Remove="Templates\**" />
+    <Compile Remove="Views\Customers\**" />
+    <Compile Remove="Views\Wishlists\**" />
     <Content Remove="Templates\**" />
+    <Content Remove="Views\Customers\**" />
+    <Content Remove="Views\Wishlists\**" />
     <EmbeddedResource Remove="Templates\**" />
+    <EmbeddedResource Remove="Views\Customers\**" />
+    <EmbeddedResource Remove="Views\Wishlists\**" />
     <None Remove="Templates\**" />
+    <None Remove="Views\Customers\**" />
+    <None Remove="Views\Wishlists\**" />
   </ItemGroup>
 
   <ItemGroup>

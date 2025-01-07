@@ -21,6 +21,13 @@ namespace BLL.Models
 
         public string Category => Record.Category?.Name;
 
+        public string Customers => string.Join("<br>",Record.Wishlists?.Select(wl => wl.Customer?.Name + " " + wl.Customer?.Surname));
 
+        [DisplayName("Customers")]
+        public List<int> CustomerIds 
+        {  
+            get => Record.Wishlists?.Select(wl => wl.CustomerId).ToList(); 
+            set => Record.Wishlists = value.Select(v => new Wishlist() { CustomerId = v }).ToList(); 
+        }
     }
 }

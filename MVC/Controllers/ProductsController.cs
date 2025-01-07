@@ -5,6 +5,7 @@ using BLL.Services.Bases;
 using BLL.Models;
 using BLL.DAL;
 using BLL.Services;
+using Microsoft.AspNetCore.Authorization;
 
 
 
@@ -12,6 +13,7 @@ using BLL.Services;
 
 namespace MVC.Controllers
 {
+    [Authorize]
     public class ProductsController : MvcController
     {
         // Service injections:
@@ -19,24 +21,25 @@ namespace MVC.Controllers
         private readonly ICategoryService _categoryService;
 
         /* Can be uncommented and used for many to many relationships. {Entity} may be replaced with the related entiy name in the controller and views. */
-        //private readonly IService<{Entity}, {Entity}Model> _{Entity}Service;
+        private readonly IService<Customer, CustomerModel> _customerService;
 
         public ProductsController(
 			IService<Products, ProductModel> productsService
             , ICategoryService categoryService
 
             /* Can be uncommented and used for many to many relationships. {Entity} may be replaced with the related entiy name in the controller and views. */
-            //, Service<{Entity}, {Entity}Model> {Entity}Service
+            , IService<Customer, CustomerModel> customerService
         )
         {
             _productsService = productsService;
             _categoryService = categoryService;
 
             /* Can be uncommented and used for many to many relationships. {Entity} may be replaced with the related entiy name in the controller and views. */
-            //_{Entity}Service = {Entity}Service;
+            _customerService = customerService;
         }
 
         // GET: Products
+        [AllowAnonymous]
         public IActionResult Index()
         {
             // Get collection service logic:
@@ -56,12 +59,13 @@ namespace MVC.Controllers
         {
             // Related items service logic to set ViewData (Record.Id and Name parameters may need to be changed in the SelectList constructor according to the model):
             ViewData["CategoryId"] = new SelectList(_categoryService.Query().ToList(), "Record.Id", "Name");
-            
+
             /* Can be uncommented and used for many to many relationships. {Entity} may be replaced with the related entiy name in the controller and views. */
-            //ViewBag.{Entity}Ids = new MultiSelectList(_{Entity}Service.Query().ToList(), "Record.Id", "Name");
+            ViewBag.CustomerIds = new SelectList(_customerService.Query().ToList(), "Record.Id", "NameAndSurname");
         }
 
         // GET: Products/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             SetViewData();
@@ -71,6 +75,7 @@ namespace MVC.Controllers
         // POST: Products/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create(ProductModel products)
         {
             if (ModelState.IsValid)
@@ -100,6 +105,7 @@ namespace MVC.Controllers
         // POST: Products/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult Edit(ProductModel products)
         {
             if (ModelState.IsValid)
@@ -118,6 +124,7 @@ namespace MVC.Controllers
         }
 
         // GET: Products/Delete/5
+        [Authorize(Roles = "Admin")]
         public IActionResult Delete(int id)
         {
             // Get item to delete service logic:
@@ -128,6 +135,7 @@ namespace MVC.Controllers
         // POST: Products/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteConfirmed(int id)
         {
             // Delete item service logic:

@@ -40,7 +40,8 @@ namespace BLL.Services
         {
             if (_db.Categories.Any(s => s.Id != record.Id && s.Name.ToUpper() == record.Name.ToUpper().Trim()))
                 return Error("Category with the same name exists!");
-            Category entity = _db.Categories.SingleOrDefault(s => s.Id == record.Id);
+            var entity = _db.Categories.SingleOrDefault(s => s.Id == record.Id); //category entity = _db.Categories.SingleOrDefault(s => s.Id == record.Id);
+
             if (entity is null)
                 return Error("Category can't be found!");
             entity.Name = record.Name.Trim();

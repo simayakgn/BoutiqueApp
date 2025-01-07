@@ -4,5 +4,6 @@
     {
         public static string Title { get; set; }
         public static string Description { get; set; }
+        public static string Developer {  get; set; }
     }
 }
